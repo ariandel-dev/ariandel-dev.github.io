@@ -1,0 +1,91 @@
+---
+author: ariandel
+date: 2025-03-03
+description: dependency injection
+tags: [dev, go]
+title: dependency injection
+---
+
+의존성 역전이라고 구체적인 클래스 대신에 인터페이스를 통한 선언을 권장하곤 하는데,
+일단 해당 인터페이스로 scope를 줄이면 해당 클래스에서 필요한 기능만 사용하게끔 강제가 가능하여
+휴먼 에러도 줄일 수 있고 의도를 파악하는데도 도움이 된다.
+
+여기 더 나아가서 여러 클래스에서 해당 인터페이스를 사용한다면 좀더 범용적인 기능을 구현하기에도 용이하다.
+
+좋은 예시가 있어서 첨부한다.
+
+아래와 같이 io.Writer타입으로 di를 한다면 greet함수는 스트링 생성에만 집중할 수 있고
+해당 데이터가 어디에 쓰일건지는 DI를 통해 결정할 수 있다.
+
+```go
+func Greet(writer io.Writer, name string) {
+	fmt.Fprintf(writer, "Hello, %s", name)
+}
+
+func PrintGreet(name string) {
+	Greet(os.Stdout, name)
+}
+
+func MyGreeterHandler(w http.ResponseWriter, r *http.Request) {
+	Greet(w, "World")
+}
+
+func main() {
+	PrintGreet("Elodie")
+	http.ListenAndServe(":5001", http.HandlerFunc(MyGreeterHandler))
+}
+```
+
+의존성에 대한 결합을 줄임으로 인해서 아래와 같이 테스트하기도 용이해진다.
+실제 사용사례에서는 주로 db를 접근하는 함수를 테스트할때 해당 db를 DI로 주입하는 것이 테스트함수 작성하기 용이할 것이다.
+
+```go
+func TestGreet(t *testing.T) {
+	buffer := bytes.Buffer{}
+	Greet(&buffer, "Chris")
+
+	got := buffer.String()
+	want := "Hello, Chris"
+
+	if got != want {
+		t.Errorf("got %q want %q", got, want)
+	}
+}
+```
+
+### spy function
+
+di는 spy 함수를 만들때도 유용하다.
+
+```go
+func Countdown(writer io.Writer, sleeper Sleeper) {
+	for i := countdownStart; i > 0; i-- {
+		fmt.Fprintln(writer, i)
+    sleeper.Sleep()
+	}
+	fmt.Fprint(writer, finalWord)
+}
+````
+
+이렇게 time.Sleep(1 * time.Second)을 호출하는 것이 아니라 sleeper객체를 사용하면
+테스트할때 spy sleeper를 호출하면 된다. 이러면 테스트시에는 실제로 3초를 기다릴필요가없어진다.
+
+```go
+func (s *SpySleeper) Sleep() {
+	s.Calls++
+}
+
+func TestCountdown(t *testing.T) {
+	buffer := &bytes.Buffer{}
+	spySleeper := &SpySleeper{}
+
+	Countdown(buffer, spySleeper)
+
+  ...
+}
+```
+
+> [!NOTE]
+> 
+> 테스트 코드에서 mocking할 의존성이 많다면 한번에 너무 많은 테스트를 진행하고 있을 수 있다.
+> Normally a lot of mocking points to bad abstraction in your code.

@@ -1,0 +1,61 @@
+---
+author: ariandel
+date: 2025-03-02
+description: err check
+tags: [dev, go]
+title: err check
+---
+
+함수 결과물의 에러가 핸들링되고 있는지 확인 할 수 있는 패키지를 제공해준다.
+
+`go install github.com/kisielk/errcheck@latest`
+
+---
+
+추가로 [블로그](https://dave.cheney.net/2016/04/27/dont-just-check-errors-handle-them-gracefully)에서 읽은 에러 핸들링 팁도 적어본다..
+
+### error.Error() 의 결과를 검사하지 말자
+
+error.Error() 메서드는 사람이 읽기 위한 것이지 코드에서 사용하기 위한 것이 아니다.
+
+### reusing error struct
+
+중복하여 쓸수 있어보이는 에러도 핸들링시 방식이 달라야 한다면 분리하는 게 좋다.
+
+> [!NOTE]
+> 
+> You can redirect the user when ErrNotFound is encountered, 
+> but display an error message when ErrWordDoesNotExist is encountered.
+
+```go
+var (
+	ErrNotFound = DictionaryErr("could not find the word you were looking for")
+	ErrWordExists = DictionaryErr("word already exists")
+	ErrWordDoesNotExist = DictionaryErr("word does not exist")
+)
+
+func (d Dictionary) Search(key string) (string, error) {
+	definition, ok := d[key]
+
+	if !ok {
+		return "", ErrNotFound
+	}
+
+	return definition, nil
+}
+
+func (d Dictionary) Update(key, value string) error {
+	_, err := d.Search(key)
+
+	switch err {
+	case ErrNotFound:
+		return ErrWordDoesNotExist
+	case nil:
+		d[key] = value
+	default:
+		return err
+	}
+
+	return nil
+}
+```

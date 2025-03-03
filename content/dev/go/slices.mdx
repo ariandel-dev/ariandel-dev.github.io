@@ -1,0 +1,85 @@
+---
+author: ariandel
+date: 2025-03-01
+description: array와 slice의 차이
+tags: ["dev", "go"]
+title: slices
+---
+
+slice는 항상 array를 가르키고 있기 때문에 물리적 array가 하나 필요하다.
+
+동일한 array에 대해서 여러 slice를 만들 수 있다.
+slice를 통해서 값을 수정하면 기존 array의 값이 변경된다.
+
+### 새로운 배열 생성기준
+
+append, make로 생성이되고 re-slicing으로는 생성되지 않는다.
+
+```go
+x := []int{1, 2, 3}
+var s []int
+
+s = x[:]
+
+// s수정
+s[0] = 100
+
+t.Logf("x[0] %d", x[0]) // 100
+t.Logf("s[0] %d", s[0]) // 100
+
+s = append(s, 4)
+
+s[1] = 200
+t.Logf("x[1] %d", x[1]) // 2
+t.Logf("s[1] %d", s[1]) // 200
+```
+
+### 메모리 해제 기준
+
+더이상 원본 배열에대한 참조가 없으면 해제가 되는데
+re-slicing된 일부분이라도 참조가있으면 원본배열 전체가 유지 된다.
+
+```go
+var digitRegexp = regexp.MustCompile("[0-9]+")
+
+func FindDigits(filename string) []byte {
+    b, _ := ioutil.ReadFile(filename)
+    return digitRegexp.Find(b)
+}
+```
+
+Find는 전체 배열에서 slice를 반환하기 때문에 해당 값이 계속 참조되는 경우
+읽은 파일 내용 전체가 메모리에 남아버리는 일이 생길 수 있다.
+
+이러한 문제를 예방하려면 make,copy로 새로운 배열을 생성하는 과정을 거쳐야 할 것이다.
+
+```go
+func CopyDigits(filename string) []byte {
+    b, _ := ioutil.ReadFile(filename)
+    b = digitRegexp.Find(b)
+    c := make([]byte, len(b))
+    copy(c, b)
+    return c
+}
+```
+
+#### copy
+
+copy는 slice간의 cap이 다른 경우에도 최소한의 길이만큼만 복사한다.
+
+또 원본 배열이 동일한경우에도 곂치는 원소에대해서 문제없이 값을 복사해준다고한다.
+
+### length and capacity
+
+go [blog](https://go.dev/blog/slices-intro)에 자세히 설명되어있다.
+
+cap은 실제 array의 할당받은 메모리,
+len은 slice의 길이를 나타낸다.
+
+slice에서 append를 통해 cap을 늘려야할 경우 가르키는 array는 기존 길이의 2배만큼 늘어난다.
+
+```go
+a := []string{"John", "Paul"}
+b := []string{"George", "Ringo", "Pete"}
+a = append(a, b...) // equivalent to "append(a, b[0], b[1], b[2])"
+```

@@ -1,0 +1,32 @@
+---
+author: ariandel
+date: 2025-03-02
+description: pointer
+tags: [dev, go]
+title: pointer
+---
+
+파라미터로 전달시에 기본적으로 값을 복사한다. 이게 당연하기도하고
+그래서 원본수정이 필요하면 포인터를 써야한다.
+
+C와의 차이점으로는 파라미터든 어떻게든 *w로 선언만 해주면 나중에 메모리 접근시 *를 붙이지 않아도 된다.
+
+```go
+func (w *Wallet) Balance() int {
+	return w.balance // (*w).balance 와 동일하게 작동한다.
+}
+```
+
+글로벌 변수를 선언할때는 var 키워드를 사용한다.
+```go
+var ErrInsufficientFunds = errors.New("cannot withdraw, insufficient funds")
+
+func (w *Wallet) Withdraw(amount Bitcoin) error {
+	if amount > w.balance {
+		return ErrInsufficientFunds
+	}
+	w.balance -= amount
+	return nil
+}
+```
+

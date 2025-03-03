@@ -1,0 +1,45 @@
+---
+author: ariandel
+date: 2025-02-28
+description: 깃허브에서 찾은 튜토리얼 따라하기
+tags: ["dev", "go"]
+title: go benchmark
+---
+
+함수에서 리턴이 명확하지 않으면 리턴타입 명시할때 변수명을 선언해서 사용 할 수 있다.
+
+### example function
+
+go의 테스트 파일에는 예제 함수를 추가할 수 있는데
+해당 코드는 pkgsite로 문서화할때 예제로 추가된다.
+
+문서의 예제코드가 제대로 작동하는지 항상 트래킹하기가 힘든데
+go에서 주석으로 [output](https://go.dev/blog/examples)을 명시해주면 알아서 테스트해주기 때문에 매우 편리하다.
+
+### benchmark function
+
+go에서는 벤치마크용 함수도 작성가능하다.
+
+`go test -bench=.` 명령어로 벤치마크 테스트를 할 수 있다.
+
+주의점으로는 벤치마크는 보통 실행시간이 안정될때까지 반복해서 실행되는데 다음과 같은 경우 
+`n`이 증가할 수록 실행시간이 길어지기 때문에 벤치마킹이 안끝난다..
+
+```go
+func BenchmarkFibWrong(b *testing.B) {
+    for n := 0; n < b.N; n++ {
+        Fib(n)
+    }
+}
+```
+
+---
+
+node의 테스팅 라이브러리처럼 테스트 커버리지 기능도 제공한다 
+
+`go test -cover`
+
+
+
+
+

@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { NavbarLink } from './components/NavbarLink'
  
 export const metadata = {
-  title: 'Blog Example'
+  title: 'Ariandel Blog'
 }
  
 export default async function RootLayout({ children }) {
