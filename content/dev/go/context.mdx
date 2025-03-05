@@ -1,0 +1,24 @@
+---
+author: ariandel
+date: 2025-03-05
+description: go context
+tags: [dev, go]
+title: go context
+---
+
+context패키지는 실행시간이 긴 프로세스 작업이 중단되거나 할때 매니징하는 기능을 제공한다.
+웹서버 프로세스가 대표 예시가 될 것 같다.
+
+컨택스트에 관련한 go [포스트](https://go.dev/blog/context)가 정말 많은데 많은 api간에 공통된 컨텍스트 전송을 원활하게 하기 위해서
+요즘엔 첫번째 인자로 컨텍스트를 받는 경우가 [많다고 한다](https://go.dev/blog/context-and-structs).
+
+> Context provides a means of transmitting deadlines, caller cancellations,
+> and other request-scoped values across API boundaries and between processes.
+
+---
+
+좀 찾아보면 찬반의견이 많은 것 같다.
+
+모든 함수마다 첫번째 파라미터로 ctx를 넣는 것은 아무리 보아도 좋은 의견은 아니기 때문에..
+
+여기 [포스트](https://faiface.github.io/post/context-should-go-away-go2/) 내용이 참 알찬 것 같아서 첨부한다.

@@ -43,3 +43,57 @@ func CheckWebsites(wc WebsiteChecker, urls []string) map[string]bool {
 	return results
 }
 ```
+
+### sync
+
+sync 패키지는 동시성 처리를 위한 다양한 기능을 제공한다.
+
+- `Mutex`
+- `WaitGroup`
+
+```go
+type Counter struct {
+	mu    sync.Mutex
+	value int
+}
+
+func NewCounter() *Counter {
+	return &Counter{}
+}
+
+func (c *Counter) Inc() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.value++
+}
+
+t.Run("it runs safely concurrently", func(t *testing.T) {
+	wantedCount := 1000
+	counter := NewCounter()
+	
+	var wg sync.WaitGroup
+	wg.Add(wantedCount)
+
+	for i := 0; i < wantedCount; i++ {
+		go func() {
+			counter.Inc()
+			wg.Done()
+		}()
+	}
+
+	wg.Wait()
+	assertCounter(t, counter, wantedCount)
+})
+```
+
+### chan vs Mutex
+
+go에서 [포스트](https://go.dev/wiki/MutexOrChannel)로도 다루는 내용이다.
+
+`캐싱`, `상태`관리에는 뮤택스를 쓰고 데이터 소유권을 전달할 때에는 채널을 쓰는게 좋다고 한다.
+
+실제 사용하면서 더 간결하게 쓸 수 있는 기능을 선택해서 쓰는게 좋을 것 같다.
+
+> [!NOTE]
+>
+> go vet으로 소소한 버그들을 잡아낼 수 있는 모양이다.

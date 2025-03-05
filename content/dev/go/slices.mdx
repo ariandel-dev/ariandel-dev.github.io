@@ -78,6 +78,11 @@ len은 slice의 길이를 나타낸다.
 
 slice에서 append를 통해 cap을 늘려야할 경우 가르키는 array는 기존 길이의 2배만큼 늘어난다.
 
+> [!NOTE]
+>
+> 이부분에서도 물론 새로운 array를 가르키는 slice를 반환하는 것이고 
+> 기존 array에 대한 참조가 없다면 삭제되기 때문에 배열이 늘어나는 것 처럼 보일 뿐이다.
+
 ```go
 a := []string{"John", "Paul"}
 b := []string{"George", "Ringo", "Pete"}
