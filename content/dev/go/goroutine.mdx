@@ -1,0 +1,45 @@
+---
+author: ariandel
+date: 2025-03-03
+description: goroutine
+tags: [dev, go]
+title: goroutine
+---
+
+동시성 처리를 위해서 go에서 지원하는 기능이다.
+
+### race condition
+
+동일 메모리에 접근하는 경우 디버깅이 어려운 stack trace를 내놓는 경우가 있는데
+go에서는 이런 경우를 발견하기 위해서 `-race` 플래그를 제공한다.
+
+```bash
+go run -race main.go
+```
+
+Go의 [포스트](https://go.dev/blog/race-detector)를 보면 해당기능은 구글에서 개발한 ThreadSanitizer를 기반으로 만들었다고 한다.
+
+### channel
+
+공통된 메모리에 접근하는 대신에 채널을 통해서 메시지를 주고 받는 방식으로 동시성 처리를 할 수 있다.
+각 루틴에서 채널로 데이터를 보내고 채널에 쌓인 데이터를 메모리에 옮겨준다.
+
+```go
+func CheckWebsites(wc WebsiteChecker, urls []string) map[string]bool {
+	results := make(map[string]bool)
+	resultChannel := make(chan result)
+
+	for _, url := range urls {
+		go func() {
+			resultChannel <- result{url, wc(url)}
+		}()
+	}
+
+	for i := 0; i < len(urls); i++ {
+		r := <-resultChannel
+		results[r.string] = r.bool
+	}
+
+	return results
+}
+```

@@ -85,7 +85,18 @@ func TestCountdown(t *testing.T) {
 }
 ```
 
+### 주의사항
+
 > [!NOTE]
 > 
-> 테스트 코드에서 mocking할 의존성이 많다면 한번에 너무 많은 테스트를 진행하고 있을 수 있다.
 > Normally a lot of mocking points to bad abstraction in your code.
+
+테스트 코드에서 mocking할 의존성이 많다면 한번에 너무 많은 테스트를 진행하고 있을 수 있다.
+이럴때는 리팩토링하는 습관을 지키도록 하자.
+
+실제로 활용하기에 어렵다고 느낀다면 너무 구현과정에서의 테스팅을 많이 하고 있을 수 있다.
+implementation보다 behavior에 초점을 맞추어 테스트하자.
+
+추가로 [튜토리얼](https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/mocking#but-mocks-and-tests-are-still-making-my-life-hard)에서 읽은 문구를 첨부한다.
+
+> Although Go lets you test private functions, I would avoid it as private functions are implementation detail to support public behaviour.

@@ -1,9 +1,9 @@
 ---
 author: Ariandel
 date: 2025-02-09
-description: 자바스크립트 호이스팅에 대한 설명
+description: 호이스팅, 클로저 복습
 readingTime: 10
-tags: ['javascript', 'development']
+tags: ['javascript', 'dev']
 title: 호이스팅
 ---
 
@@ -97,3 +97,9 @@ foo = "foo";
 실제로 컴파일런과정에서 [호이스팅이 된다고 한다](https://tc39.es/ecma262/#sec-let-and-const-declarations). 접근이 안될뿐.
 
 > 변수는 자기자신을 포함하는 lexical 환경이 인스턴스화 될 때 생성되지만 변수의 lexicalBinging 평가 과정이 끝나기 전 까지는 접근할 수 없습니다.
+
+---
+
+#### 클로저
+
+lexical scope를 기억하고 활용하는 함수를 일컫는다.
