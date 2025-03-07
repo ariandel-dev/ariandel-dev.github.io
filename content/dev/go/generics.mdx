@@ -1,0 +1,53 @@
+---
+author: ariandel
+date: 2025-03-07
+description: Go 언어의 제네릭 사용법
+tags: [dev go]
+title: Go 제네릭
+---
+
+내가 사용한 ts 나 c#이나 모두 제네릭이 있었는데 go에도 있었다.
+이게 없으면 오버로딩도 없는 go에서는 여러 타입에 맞는 범용 함수를 만들기위해서는
+인터페이스를 쓰는 수밖에 없는데 이게 약간 ts의 any타입같은 느낌이라서 DX상 매우 좋지 않다.
+
+```go
+var v, ok interface{} = x.(T) // dynamic types of v and ok are T and bool
+```
+
+인터페이스를 쓰면서 타입에러가 안나오려면 이렇게 변환하는 과정을 거쳐야 한다.
+
+---
+
+구조체나 함수에서 다음과 같이 쓸 수 있다.
+```go
+func AssertNotEqual[T comparable](t *testing.T, got, want T) {
+	t.Helper()
+	if got == want {
+		t.Errorf("didn't want %v", got)
+	}
+}
+
+type Stack[T any] struct {
+	values []T
+}
+
+stack := new(Stack[int])
+```
+
+가장 대표적인 사용처로 reduce나 find같은 higher order function을 만들때 유용하다.
+이런걸 만들어서 사용하면 기능들을 좀더 선언적으로 작성하는데 도움이 많이 될 것이다.
+
+```go
+func Reduce[A, B any](collection []A, accumulator func(B, A) B, initialValue B) B {
+	accumulated := initialValue
+	for _, value := range collection {
+		accumulated = accumulator(accumulated, value)
+	}
+	return accumulated
+}
+```
+
+제네릭은 무분별하게 사용하면 코드가 복잡해 질수 있으니 왠만하면
+리팩토링 단계에서 적용하는 것으로 하자.
+
+> little duplication is better than coupling to a bad abstraction

@@ -1,0 +1,13 @@
+---
+author: ariandel
+date: 2025-03-06
+description: cls, tls
+tags: [dev, nest]
+title: cls 정리
+---
+
+예전에 듣기로 thread local storage라고 쓰레드 내부에서 전역처럼 작동하는 변수가 필요함에 따라서
+메모리를 쓰레드별로 일부 할당해서 해당 쓰레드에서 접근 가능한 공간을 만들었다고 들었는데
+cls도 이와 비슷한 개념인 것 같다.
+
+어디서든 동일 변수에 접근 가능하지만 실행 컨텍스트에 따라 값이 달라지는 것이다.
