@@ -1,0 +1,17 @@
+---
+author: ariandel
+date: 2025-03-13
+description: useSpring 응용
+tags: [react, animation]
+title: useBoop
+---
+
+[포스트](https://www.joshwcomeau.com/react/boop/)내용 을 따라해보고 알게된 것들 정리
+
+display속성이 일단 블록 관련 속성이 아니라면 transform 속성을 사용할 수 없다.
+
+backface-visibility와 같이 3d 효과를 내는 속성들중에는 cpu대신 gpu를 사용하도록 유도하는 기능이 있어서
+현재 기능상 사용할 필요가 없는 경우에도 하드웨어 가속을 위해 쓰일 수 있다.
+
+wrapper컴포넌트로 기능을 만들어 놓았는데 이벤트 핸들러와 타겟이 분리되어야 한다면
+훅으로 변경하는 것도 생각해보자.

@@ -1,0 +1,13 @@
+---
+author: ariandel
+date: 2025-03-14
+description: initial state 초기화 방법
+tags: [react]
+title: zustand 초기화
+---
+
+zustand가 provider컴포넌트로 래핑안해도되어서 보일러 플레이트가 줄어드는 점은 좋기는 한데,
+첫 state를 파라미터로 주입하는게 안되어서 문서를 뒤져보았더니 
+zustand 자체적으로도 초기화시 상태를 주입받아야한다면 useContext사용을 [추천하고있다..](https://zustand.docs.pmnd.rs/guides/initialize-state-with-props)
+
+그래서 그냥 useContext로 바꾸고 첫 마운트시 유저상태가 안보이던 부분을 수정했다.
