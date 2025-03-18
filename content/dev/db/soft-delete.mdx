@@ -1,0 +1,34 @@
+---
+author: ariandel
+date: 2025-03-17
+description: soft-delete
+tags: [dev, db]
+title: soft-delete
+---
+
+유저가 탈퇴시 실제로 정보를 삭제하면 추후 해당 데이터가 필요한 경우 문제가 생기기 때문에
+삭제 여부를 표시하는 필드를 추가하는 것이 일반적이다.
+
+몽고db에서는 그렇게 했었는데 typeorm에서는 데코레이터로 간편하게 해당기능 구현이 가능하다
+
+```ts
+@DeleteDateColumn()
+deletedAt: Date;
+
+...
+
+user.softDelete(); 
+```
+
+softDelete를 호출하면 DeleteDateColumn 필드가 업데이트된다.
+
+eslintConfig: [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    rules: {
+      "@typescript-eslint/no-unused-vars": "off",
+    },
+  },
+];
+
+캠페인 신청하기: &apos;캠페인 신청하기&apos;
