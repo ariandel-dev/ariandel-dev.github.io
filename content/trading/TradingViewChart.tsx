@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 const TradingViewChart = ({ ticker }: { ticker: string }) => {
   const container = useRef(null);
