@@ -1,0 +1,25 @@
+---
+author: ariandel
+date: 2025-03-22
+description: 사이트 통계 서비스 찾아보기
+tags: ["dev", "saas"]
+title: 사이트 통계 서비스
+---
+
+직접 구현해서 사용하는 것도 가능하겠지만 db관리부터 설정할게 많을 것 같아서 알아보았다.
+
+그래서 좀 찾아보니 월에 1달러로 [제공하는 곳](https://onedollarstats.com/)을 찾았다. 
+drizzle 개발팀에서 만들었다고 한다.
+
+referrer, 가장많이본 페이지, 디바이스정보, 방문시간과 같이 서비스 분석에 필요한 정보들을 차트로 제공해주는 것 같다.
+
+
+적용도 간단하다, root layout에 한줄 추가하고 끝이다.
+
+```jsx
+<Script
+  defer
+  data-site-id={siteConfig.url}
+  src="https://assets.onedollarstats.com/stonks.js"
+/>
+```
