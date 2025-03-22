@@ -1,0 +1,54 @@
+---
+author: ariandel
+date: 2025-03-22
+description: request waterfall 에 대해 알아보자
+tags: ["react", "dev"]
+title: request waterfall
+---
+
+react-query 문서를 살펴보다가 해당 문제에 대해 다루는 [문서](https://tanstack.com/query/latest/docs/framework/react/guides/request-waterfalls)를 찾았다.
+
+js bundle을 로딩하고 번들안에 있는 css를 가져오고 css안의 image리소스를 가져오게 되면
+ 3번의 네트워크 요청이 순차적으로 이루어진다. 한번당 250ms 정도(3G 환경) 걸리면 총 750ms 정도 걸리게 된다.
+
+query도 마운트 이후에 실행하게 되면 결국 js번들 로딩이 끝난 이후에 실행되기 때문에 
+비슷한 종류의 문제가 발생한다.
+
+이걸 최적화하려면 서버에서 미리 요청을 해야하고 이를 위한 기능을 제공해준다.
+
+++
+
+당연히 useQuery만으로도 의존관계가 있으면 이런 워터폴 현상이 발생할 수 있다.
+useSuspenseQuery는 그냥 사용하면 useQuery와 다르게 순차적으로 요청이 [발생한다고 한다].(https://tanstack.com/query/latest/docs/framework/react/guides/request-waterfalls)
+
+성능 최적화를위해서 lazy import를 사용하는 경우에도 비슷한 문제가 발생할 수 있다.
+
+```js
+const GraphFeedItem = React.lazy(() => import('./GraphFeedItem'))
+
+function Feed() {
+  const { data, isPending } = useQuery({
+    queryKey: ['feed'],
+    queryFn: getFeed,
+  })
+
+  if (isPending) {
+    return 'Loading feed...'
+  }
+
+  return (
+    <>
+      {data.map((feedItem) => {
+        if (feedItem.type === 'GRAPH') {
+          return <GraphFeedItem key={feedItem.id} feedItem={feedItem} />
+        }
+
+        return <StandardFeedItem key={feedItem.id} feedItem={feedItem} />
+      })}
+    </>
+  )
+}
+```
+
+
+
