@@ -1,0 +1,44 @@
+---
+author: ariandel
+date: 2025-03-25
+description: nuqs 프로젝트 까보기
+tags: ["open-source", "dev"]
+title: nuqs
+---
+
+react-table, react-query로 데이터 테이블을 만들면서 페이지네이션, 필터적용할때 쿼리파라미터랑 연동하면서 유용하게 사용했는데,
+소스가 궁금해서 열어보았다.
+
+### 테스트
+
+공식문서에도 contribution 가이드에 테스트관련 내용이 담겨있길래 
+테스트 코드 작성을 어떻게 했는지 확인해보았다.
+
+#### sync.test.tsx
+우선 첫번째 테스트는 동일한 훅을 두 컴포넌트의 클릭 이벤트에 연결하고
+한쪽을 클릭했을때 두 컴포넌트상에서 상태가 동기화되는지 확인하는 테스트이다.
+
+이때 테스트용 컴포넌트를 테스트코드내부에서 임시로 생성해주는데,
+이렇게 훅을 라이브러리로 배포하는 경우 test-id로 컴포넌트 쿼리하는 방식도 괜찮을것같다.
+
+다만 실제 ui컴포넌트 테스트시에는 [지양](https://testing-library.com/docs/queries/bytestid/)하자.
+
+```tsx
+render(
+  <>
+    <TestComponent testId="a" />
+    <TestComponent testId="b" />
+  </>,
+  {
+    wrapper: withNuqsTestingAdapter()
+  }
+)
+// Act
+const buttonA = screen.getByTestId('a')
+const buttonB = screen.getByTestId('b')
+```
+
+### 로직
+
+#### useQueryState
+
