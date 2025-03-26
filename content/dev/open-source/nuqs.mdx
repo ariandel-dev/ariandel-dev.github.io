@@ -2,7 +2,7 @@
 author: ariandel
 date: 2025-03-25
 description: nuqs 프로젝트 까보기
-tags: ["open-source", "dev"]
+tags: ["open-source", "dev", "react"]
 title: nuqs
 ---
 
@@ -43,6 +43,42 @@ const buttonB = screen.getByTestId('b')
 #### useQueryState
 
 소스를 뜯어보면 핵심훅은 100줄정도로 그리 길지 않다. 내부적으로는 useState를 사용한다.
+
+내부적으로 사용되는 initialState는 큐에 등록된 값이 있으면 해당값을 사용하고
+없으면 어뎁터에서 서치 파라미터 값을 가져와서 사용한다.
+
+```ts
+const [internalState, setInternalState] = useState<T | null>(() => {
+  const queuedQuery = getQueuedValue(key)
+  const query =
+    queuedQuery === undefined
+      ? (initialSearchParams?.get(key) ?? null)
+      : queuedQuery
+  return query === null ? null : safeParse(parse, query, key)
+})
+```
+
+여러 컴포넌트에서 동일한 서치파라미터로 훅을 사용하는 경우 상태가 공유되어야 하기 때문에 
+훅에서 useEffect로 emitter를 구독하고 키값이 변경되면 내부 상태를 업데이트해준다.
+
+```ts
+useEffect(() => {
+  function updateInternalState({ state, query }: CrossHookSyncPayload) {
+    debug('[nuqs `%s`] updateInternalState %O', key, state)
+    stateRef.current = state
+    queryRef.current = query
+    setInternalState(state)
+  }
+  debug('[nuqs `%s`] subscribing to sync', key)
+  emitter.on(key, updateInternalState)
+  return () => {
+    debug('[nuqs `%s`] unsubscribing from sync', key)
+    emitter.off(key, updateInternalState)
+  }
+}, [key])
+```
+
+큐에 등록하는걸 어디서하나 봣더니 useQueryState의 update부분에서 해준다.
 
 
 

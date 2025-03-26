@@ -1,0 +1,19 @@
+---
+author: ariandel
+date: 2025-03-26
+description: file uploader component
+tags: ["dev", "open-source", "react"]
+title: File Uploader Component
+---
+
+자체적으로 이미지 업로드 기능이 필요해서 추가한 훅이 있기는했는데
+[오픈소스](https://github.com/sadmann7/file-uploader)를 보고 개선할점이 있는지 확인할 겸 소스를 열어보았다.
+
+### rate limit
+
+아무래도 웹서버 메모리 내에 유저별로 rate limit을 저장하기는 무리가 있어서 db를 이용하는데
+upstash에서 제공하는 [기능](https://github.com/upstash/ratelimit-js)을 활용한다. redis에 유저 id별로 상태를 저장한다.
+라이브러리 리드미를 보면 db에 저장하기 때문에 stateless한 aws 람다같은 데에서도 쓸 수 있다.
+
+upstash자체적으로 redis 서비스를 제공해서 그런가 이런 라이브러리도 자체적으로 개발한 것 같다.
+
