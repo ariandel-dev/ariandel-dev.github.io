@@ -9,34 +9,14 @@ title: nuqs
 react-table, react-query로 데이터 테이블을 만들면서 페이지네이션, 필터적용할때 쿼리파라미터랑 연동하면서 유용하게 사용했는데,
 소스가 궁금해서 열어보았다.
 
-### 테스트
+### 소스 구조
 
-공식문서에도 contribution 가이드에 테스트관련 내용이 담겨있길래 
-테스트 코드 작성을 어떻게 했는지 확인해보았다.
+useQueryState은 useState과 동일하게 state, update함수를 반환한다.
 
-#### sync.test.tsx
-우선 첫번째 테스트는 동일한 훅을 두 컴포넌트의 클릭 이벤트에 연결하고
-한쪽을 클릭했을때 두 컴포넌트상에서 상태가 동기화되는지 확인하는 테스트이다.
+update은 큐에 변경할 사항을 등록하고 scheduleFlushToURL을 호출해서 다음 이벤트 루프에
+큐에 등록된 변경사항을 배치로 처리하는 promise를 반환한다.
 
-이때 테스트용 컴포넌트를 테스트코드내부에서 임시로 생성해주는데,
-이렇게 훅을 라이브러리로 배포하는 경우 test-id로 컴포넌트 쿼리하는 방식도 괜찮을것같다.
-
-다만 실제 ui컴포넌트 테스트시에는 [지양](https://testing-library.com/docs/queries/bytestid/)하자.
-
-```tsx
-render(
-  <>
-    <TestComponent testId="a" />
-    <TestComponent testId="b" />
-  </>,
-  {
-    wrapper: withNuqsTestingAdapter()
-  }
-)
-// Act
-const buttonA = screen.getByTestId('a')
-const buttonB = screen.getByTestId('b')
-```
+해당 promise는 설정된 throttleTime만큼 대기하고 큐에 등록된 변경사항을 처리한다.
 
 ### 로직
 
@@ -78,10 +58,119 @@ useEffect(() => {
 }, [key])
 ```
 
-큐에 등록하는걸 어디서하나 봣더니 useQueryState의 update부분에서 해준다.
+#### update-queue
+
+internalState를 큐에서 가져오고 상태 update할때 큐에 등록을해주길래 
+왜 큐를 쓰는지 봣더니 브라우저단에서 히스토리 api에 rate limit을 걸어놓는 모양이다..
+브라우저 종류별로도 제한이 다르게 걸려있는 것 같다
+
+```ts
+let lastFlushTimestamp = 0
+let flushPromiseCache: Promise<URLSearchParams> | null = null
+
+/**
+ * Eventually flush the update queue to the URL query string.
+ *
+ * This takes care of throttling to avoid hitting browsers limits
+ * on calls to the history pushState/replaceState APIs, and defers
+ * the call so that individual query state updates can be batched
+ * when running in the same event loop tick.
+ *
+ * @returns a Promise to the URLSearchParams that have been applied.
+ */
+export function scheduleFlushToURL({}) {
+  if (flushPromiseCache === null) {
+    ...
+  }
+
+  return flushPromiseCache
+}
+```
+
+여러곳에서 동일한 키에대한 훅을 사용할 경우에 대비해서 
+큐에는 모두 등록해주지만 scheduleFlushToURL에서 promise등록은 한번만 해준다.
+promise내부에서는 서치 파라미터 스냅샷을 가져와서 큐를 iterate하면서 키값을 업데이트한다.
+
+여기서 주목할 부분은 서치파라미터를 가져오는 부분이나 실제 url을 업데이트하는 부분을 di로 받는다는 점이다.
+이렇게 함으로써 프레임워크별로 다른 adapter를 주입하여 사용할 수 있게 해준다.
+
+```ts
+export function scheduleFlushToURL({
+  getSearchParamsSnapshot = getSearchParamsSnapshotFromLocation,
+  updateUrl,
+  rateLimitFactor = 1
+}: Pick<
+  AdapterInterface,
+  'updateUrl' | 'getSearchParamsSnapshot' | 'rateLimitFactor'
+>) { ... }
+
+function flushUpdateQueue({
+  updateUrl,
+  getSearchParamsSnapshot
+}) { ... }
+```
+
+그리고 해당 부분 주입은 useAdapter에서 해준다.
+
+```ts
+emitter.emit(key, { state: newValue, query })
+return scheduleFlushToURL(adapter)
+```
+
+#### useAdapter
+
+인터페이스를 정의하고 프레임워크별로 컴포넌트(provider), 훅을 실제로 구현한다.
+
+```ts
+export type UseAdapterHook = () => AdapterInterface
+
+export type AdapterInterface = {
+  searchParams: URLSearchParams
+  updateUrl: UpdateUrlFunction
+  getSearchParamsSnapshot?: () => URLSearchParams
+  rateLimitFactor?: number
+}
+
+export function createAdapterProvider(useAdapter: UseAdapterHook) {
+  return ({ children, ...props }: { children: ReactNode }) =>
+    createElement(
+      context.Provider,
+      { ...props, value: { useAdapter } },
+      children
+    )
+}
+```
 
 
 
+### 테스트
+
+공식문서에도 contribution 가이드에 테스트관련 내용이 담겨있길래 
+테스트 코드 작성을 어떻게 했는지 확인해보았다.
+
+#### sync.test.tsx
+우선 첫번째 테스트는 동일한 훅을 두 컴포넌트의 클릭 이벤트에 연결하고
+한쪽을 클릭했을때 두 컴포넌트상에서 상태가 동기화되는지 확인하는 테스트이다.
+
+이때 테스트용 컴포넌트를 테스트코드내부에서 임시로 생성해주는데,
+이렇게 훅을 라이브러리로 배포하는 경우 test-id로 컴포넌트 쿼리하는 방식도 괜찮을것같다.
+
+다만 실제 ui컴포넌트 테스트시에는 [지양](https://testing-library.com/docs/queries/bytestid/)하자.
+
+```tsx
+render(
+  <>
+    <TestComponent testId="a" />
+    <TestComponent testId="b" />
+  </>,
+  {
+    wrapper: withNuqsTestingAdapter()
+  }
+)
+// Act
+const buttonA = screen.getByTestId('a')
+const buttonB = screen.getByTestId('b')
+```
 
 ### 그외
 
@@ -114,3 +203,8 @@ export function debug(message: string, ...args: any[]) {
 
 useQueryState를 타입별로 오버로딩을 해서 설명을 다르게 해놓았는데,
 유저가 어떤 파라미터를 넣는가에 따라서 주석이 달라지기 때문에 라이브러리같은 데에서 쓰기 참 좋은 것 같다.
+
+#### mitt 라이브러리
+
+node에서 제공하는 eventemitter가 아니라 [mitt](https://github.com/developit/mitt)이라는 패키지를 사용하는데
+가볍기도 하고 node환경말고 브라우저 단에서도 활용할 수 있어서 많이 사용하는 것 같다.
