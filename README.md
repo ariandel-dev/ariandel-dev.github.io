@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# My Blog
 
-## Getting Started
+Next.js로 구축된 개인 블로그입니다.
 
-First, run the development server:
+## 기술 스택
+
+- **Framework**: Next.js 15
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Package Manager**: pnpm
+- **3D Graphics**: Three.js, React Three Fiber
+- **Content**: MDX
+
+## 로컬 개발
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# 의존성 설치
+pnpm install
+
+# 개발 서버 실행
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## GitHub Pages 배포
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+이 프로젝트는 GitHub Pages를 통해 자동으로 배포됩니다.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 배포 설정
 
-## Learn More
+1. **GitHub 저장소 설정**
+   - GitHub 저장소의 Settings > Pages로 이동
+   - Source를 "GitHub Actions"로 설정
 
-To learn more about Next.js, take a look at the following resources:
+2. **자동 배포**
+   - `main` 브랜치에 푸시하면 자동으로 배포됩니다
+   - GitHub Actions 워크플로우가 빌드하고 배포를 처리합니다
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 수동 배포
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# 프로덕션 빌드
+pnpm run build
 
-## Deploy on Vercel
+# 배포 (GitHub Actions가 자동으로 처리)
+pnpm run deploy
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 배포 URL
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+배포가 완료되면 다음 URL에서 접근할 수 있습니다:
+`https://[your-username].github.io/my-blog/`
+
+## 프로젝트 구조
+
+```
+my-blog/
+├── src/
+│   ├── app/           # Next.js App Router
+│   ├── components/    # React 컴포넌트
+│   ├── content/       # MDX 콘텐츠
+│   ├── contexts/      # React Context
+│   └── lib/          # 유틸리티 함수
+├── public/           # 정적 파일
+└── .github/          # GitHub Actions 워크플로우
+```
+
+## 주요 기능
+
+- 📝 MDX 기반 블로그 포스트
+- 🎨 다크/라이트 테마 지원
+- 📱 반응형 디자인
+- 🎮 3D 인터랙티브 요소
+- 🔍 블로그 포스트 필터링
+- 📏 텍스트 크기 커스터마이징
+
+## 라이선스
+
+MIT License 

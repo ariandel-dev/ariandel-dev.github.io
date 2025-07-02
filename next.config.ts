@@ -6,6 +6,9 @@ const nextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   // Optionally, add any other Next.js config below
   
+  // GitHub Pages 배포를 위한 설정
+  output: 'export' as const,
+  
   // 루트 경로를 /blog로 리다이렉트
   async redirects() {
     return [
@@ -21,6 +24,7 @@ const nextConfig = {
     domains: [
       "api.microlink.io", // Microlink Image Preview
     ],
+    unoptimized: true, // GitHub Pages에서는 이미지 최적화를 비활성화
   },
 }
 
