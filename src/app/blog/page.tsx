@@ -6,7 +6,7 @@ import { BlogFilters } from '@/components/blog/blog-filters'
 import { loadSearchParams } from '@/lib/search-params'
 
 interface BlogPageProps {
-  searchParams: Record<string, string | string[] | undefined>
+  searchParams: Promise<Record<string, string>>
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
