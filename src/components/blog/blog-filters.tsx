@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 
 interface BlogFiltersProps {
   labels: string[]
-  selectedLabel: string
+  selectedLabel?: string
   className?: string
 }
 
