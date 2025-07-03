@@ -63,13 +63,6 @@ export function ImageViewer({
 }
 
 // MDX에서 사용할 수 있는 간단한 버전
-export function MDXImage({ src, alt, ...props }: { src: string; alt: string; [key: string]: any }) {
-  return (
-    <ImageViewer
-      src={src}
-      alt={alt}
-      className="rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
-      {...props}
-    />
-  )
+export function MDXImage({ src, alt, ...props }: ImageViewerProps) {
+  return <ImageViewer src={src} alt={alt} className="rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200" {...props} />;
 }

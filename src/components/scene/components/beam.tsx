@@ -26,8 +26,8 @@ export function Beam({ children, position, stride = 4, width = 8, ...props }: {
     toneMapped: false
   }
 
-  let i = 0
-  let range = 0
+  const i = 0
+  const range = 0;
 
   return (
     <group position={position}>
