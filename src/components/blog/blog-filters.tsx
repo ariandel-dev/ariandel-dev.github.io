@@ -1,10 +1,4 @@
-'use client'
-
-import { useQueryState } from 'nuqs'
-import { parseAsString } from 'nuqs'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 
@@ -20,7 +14,7 @@ export function BlogFilters({ labels, selectedLabel, className }: BlogFiltersPro
       {/* 라벨 목록 */}
       <div className="flex flex-wrap gap-2">
         {labels.map((labelName) => (
-          <Link href={`/blog/tag/${labelName}`}>
+          <Link href={`/blog/tag/${labelName}`} key={labelName}>
             <Badge
               key={labelName}
               variant={selectedLabel === labelName ? "default" : "outline"}
