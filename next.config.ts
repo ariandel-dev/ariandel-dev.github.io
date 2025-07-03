@@ -8,17 +8,6 @@ const nextConfig = {
   
   // GitHub Pages 배포를 위한 설정
   output: 'export' as const,
-  
-  // 루트 경로를 /blog로 리다이렉트
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/blog',
-        permanent: true,
-      },
-    ]
-  },
 
   images: {
     domains: [

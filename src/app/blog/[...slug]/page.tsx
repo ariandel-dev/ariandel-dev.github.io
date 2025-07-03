@@ -76,7 +76,7 @@ export default async function Page({
 
         <div className="flex flex-wrap gap-1">
           {labels.map((label) => (
-            <Link key={label} href={`/blog?label=${encodeURIComponent(label)}`}>
+            <Link key={label} href={`/blog/tag/${label}`}>
               <Badge 
                 variant="outline" 
                 className="text-sm cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
