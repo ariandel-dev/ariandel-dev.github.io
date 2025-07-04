@@ -5,7 +5,7 @@ import { TextSizeProvider } from '@/contexts/text-size-context'
 
 export default function BlogLayout({ children }: { children: React.ReactNode }) {
   return (
-    <TextSizeProvider>
+    <TextSizeProvider querySelector=".blog-post-wrapper">
       <div className="min-h-screen bg-background">
         <nav className="bg-card border-b border-border shadow-sm">
           <div className="max-w-4xl mx-auto px-4 py-4">
@@ -17,7 +17,7 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
                 {/* <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
                   홈으로
                 </Link> */}
-                {/* <TextSizeCustomizer /> */}
+                <TextSizeCustomizer />
                 <ThemeCustomizer />
               </div>
             </div>
